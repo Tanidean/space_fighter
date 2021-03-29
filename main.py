@@ -3,10 +3,10 @@ from random import randint, random
 
 import tkinter as tk
 
-from gamelib import Sprite, GameApp, Text
+from gamelib import Sprite, GameApp, Text, StarEnemyGenerationStrategy, EdgeEnemyGenerationStrategy
 
 from consts import *
-from elements import Ship, Bullet, Enemy
+from elements import Ship, Bullet, Enemy 
 from utils import random_edge_position, normalize_vector, direction_to_dxdy, vector_len, distance
 
 
@@ -29,8 +29,12 @@ class SpaceGame(GameApp):
         self.update_bomb_power_text()
 
         self.elements.append(self.ship)
-
         self.enemies = []
+        self.enemy_creation_strategies = [
+            (0.2, StarEnemyGenerationStrategy()),
+            (1.0, EdgeEnemyGenerationStrategy())
+        ]
+
         self.bullets = []
 
     def add_enemy(self, enemy):
@@ -112,10 +116,12 @@ class SpaceGame(GameApp):
         return [enemy]
 
     def create_enemies(self):
-        if random() < 0.2:
-            enemies = self.create_enemy_star()
-        else:
-            enemies = self.create_enemy_from_edges()
+        p = random()
+
+        for prob, strategy in self.enemy_creation_strategies:
+            if p < prob:
+                enemies = strategy.generate(self, self.ship)
+                break
 
         for e in enemies:
             self.add_enemy(e)
@@ -175,6 +181,8 @@ class SpaceGame(GameApp):
             self.ship.stop_turn('LEFT')
         elif event.keysym == 'Right':
             self.ship.stop_turn('RIGHT')
+
+    
 
 
 if __name__ == "__main__":

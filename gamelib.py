@@ -3,6 +3,9 @@ import tkinter.ttk as ttk
 
 from abc import ABC, abstractmethod
 from utils import distance
+from random import randint
+from consts import *
+from utils import random_edge_position, normalize_vector, direction_to_dxdy, vector_len, distance
 
 class GameElement(ABC):
 
@@ -165,3 +168,18 @@ class GameApp(ttk.Frame):
 
     def on_key_released(self, event):
         pass
+
+class EnemyGenerationStrategy(ABC):
+    @abstractmethod
+    def generate(self, space_game, ship):
+        pass
+
+class StarEnemyGenerationStrategy(EnemyGenerationStrategy):
+    def generate(self, space_game, ship):
+        ####
+        return space_game.create_enemy_star()
+
+class EdgeEnemyGenerationStrategy(EnemyGenerationStrategy):
+    def generate(self, space_game, ship):
+        ####
+        return space_game.create_enemy_from_edges()

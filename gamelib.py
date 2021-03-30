@@ -3,7 +3,6 @@ import tkinter.ttk as ttk
 
 from abc import ABC, abstractmethod
 from utils import distance
-from random import randint
 from consts import *
 from utils import random_edge_position, normalize_vector, direction_to_dxdy, vector_len, distance
 
@@ -110,6 +109,9 @@ class GameApp(ttk.Frame):
         self.grid(sticky="news")
         self.create_canvas()
 
+        self.key_pressed_handler = KeyboardHandler()
+        self.key_released_handler = KeyboardHandler()
+        
         self.elements = []
         self.init_game()
 
@@ -164,22 +166,22 @@ class GameApp(ttk.Frame):
         pass
 
     def on_key_pressed(self, event):
-        pass
+        self.key_pressed_handler.handle(event)
 
     def on_key_released(self, event):
-        pass
+        self.key_released_handler.handle(event)
 
-class EnemyGenerationStrategy(ABC):
-    @abstractmethod
-    def generate(self, space_game, ship):
-        pass
 
-class StarEnemyGenerationStrategy(EnemyGenerationStrategy):
-    def generate(self, space_game, ship):
-        ####
-        return space_game.create_enemy_star()
 
-class EdgeEnemyGenerationStrategy(EnemyGenerationStrategy):
-    def generate(self, space_game, ship):
-        ####
-        return space_game.create_enemy_from_edges()
+class KeyboardHandler:
+    def __init__(self, successor=None):
+        self.successor = successor
+
+    def handle(self, event):
+        if self.successor:
+            self.successor.handle(event)
+
+
+
+
+

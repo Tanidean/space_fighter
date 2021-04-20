@@ -48,22 +48,23 @@ class SpaceGame(GameApp):
     def bomb(self):
         if self.bomb_power == BOMB_FULL_POWER:
             self.bomb_power = 0
+            self.drawn_circle()
+            self.del_enemies()
+            self.update_bomb_power_text()
 
-            self.bomb_canvas_id = self.canvas.create_oval(
+    def drawn_circle(self):
+        self.bomb_canvas_id = self.canvas.create_oval(
                 self.ship.x - BOMB_RADIUS, 
                 self.ship.y - BOMB_RADIUS,
                 self.ship.x + BOMB_RADIUS, 
                 self.ship.y + BOMB_RADIUS
             )
-
-            self.after(200, lambda: self.canvas.delete(self.bomb_canvas_id))
-
-            for e in self.enemies:
-                if self.ship.distance_to(e) <= BOMB_RADIUS:
-                    e.to_be_deleted = True
-
-            self.update_bomb_power_text()
-
+        self.after(200, lambda: self.canvas.delete(self.bomb_canvas_id))
+    
+    def del_enemies(self):
+        for e in self.enemies:
+            if self.ship.distance_to(e) <= BOMB_RADIUS:
+                e.to_be_deleted = True
 
     def update_bomb_power_text(self):
         self.bomb_power_text.set_text('Power: %d%%' % self.bomb_power)
@@ -193,7 +194,6 @@ class GameKeyboardHandler(KeyboardHandler):
 
 class BombKeyPressedHandler(GameKeyboardHandler):
     def handle(self, event):
-        print('here')
         if event.char.upper() == 'Z':
             self.game_app.bomb()
         else:                                     
